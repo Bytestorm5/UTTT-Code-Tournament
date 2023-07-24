@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ultimate Tic-Tac-Toe</title>
+  <style>
+    .mainBoard {
+      border-collapse: collapse;
+    }
+    .mainBoard td {
+      width: 100px;
+      height: 100px;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 24px;
+      border: 1px solid black;
+    }
+
+    .currentBoard {
+      background-color: rgb(195, 250, 198);
+    }
+
+    .subboard {
+        font-size: 8px;
+    }
+    .subboard td {
+        width: 33px;
+        height: 33px;
+        font-size: 24px;
+    }
+  </style>
+  <script>
+
+    function updateGameState() {
+        // Replace 'http://localhost:5000/your_endpoint' with the actual endpoint URL
+        const endpointURL = 'http://localhost:5000/board';
+
+        fetch(endpointURL)
+            .then(response => response.text())
+            .then(data => {
+                // Update the 'response' paragraph with the received data
+                const responseParagraph = document.getElementById('board');
+                responseParagraph.innerHTML = data;
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    }
+
+    // Update the game state every 5 seconds (adjust the interval as needed)
+    setInterval(updateGameState, 500);
+  </script>
+</head>
+<body>
+  <h1>Ultimate Tic-Tac-Toe</h1>
+  <div id="board"></div>
+</body>
+</html>

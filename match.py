@@ -4,11 +4,25 @@ from engines.engine_base import BaseEngine
 from engines.sample import SampleEngine as Player1
 
 import time
+import requests
 
 # Some limits on how long an engine can think for.
 # Most engines should stop by the soft limit, going beyond the hard limit forfeits the game
 TIME_SOFT_LIMIT = 90
 TIME_HARD_LIMIT = 100
+
+def send_board(input_string):
+    endpoint_url = 'http://localhost:5000/update_board'  # Replace with the actual endpoint URL
+    data = {'board_repr': input_string}
+
+    try:
+        response = requests.post(endpoint_url, data=data)
+        if response.status_code == 200:
+            return response.text
+        else:
+            return f"Error: {response.status_code} - {response.text}"
+    except requests.exceptions.RequestException as e:
+        return f"Error: {e}"
 
 def run_game(p1: BaseEngine, p2: BaseEngine, game_num: int = -1) -> int:
     board = Board()
@@ -47,7 +61,7 @@ def run_game(p1: BaseEngine, p2: BaseEngine, game_num: int = -1) -> int:
         board.make_move(move[0])
         print(board)
 
-        # TODO: Send Metadata dict to webserver
+        send_board(repr(board))
     
     winner = p1 if board.turn() == 1 else p2 # Inverted since the turn will rollover regardless of victory
     victory_status = board.winner()

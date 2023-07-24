@@ -215,7 +215,7 @@ class Board():
         """
         Makes a copy of the board that does not affect the current board.
         """
-        return Board(np.array(self.board))
+        return Board(np.array(self.board), self.current_board)
     
     def move_to_idx(self, move: tuple[int]):
         """
@@ -345,6 +345,17 @@ class Board():
             
         out_str += str(self.current_board)
         return out_str
+
+def board_from_repr(repr_str: str):
+    vals = repr_str.split(' ')
+    if len(vals) < 82:
+        raise ValueError("Not enough values in representation!")
+    
+    board = np.zeros(81)
+    for i in range(81):
+        board[i] = int(vals[i])
+    
+    return Board(board, int(vals[-1]))
 
 if __name__ == "__main__":
     board = Board()
