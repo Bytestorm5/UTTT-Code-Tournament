@@ -16,13 +16,17 @@ class Board():
         Examples:
             >>> Board()
             Output: The starting position of a UTTT game.
-        """
+        """        
         if board is None:
             self.board = np.zeros(81, np.short)   
-            self.move_count = 0         
+            self.move_count = 0        
         else:
             self.board = board
             self.move_count = np.count_nonzero(board)
+        
+        self.macro_board = [2] * 9
+        for i in range(9):
+            self.macro_board[i] = self.subboard_winner(i)
 
         self.current_board = -1 if current_board == None else current_board       
 
@@ -54,9 +58,22 @@ class Board():
         Returns:
             type: -1 if O has won, 1 if X has won, and 0 if it is a draw. Returns None if the game is ongoing.
         """
+
+        # Check cache
+        if self.macro_board[board] != 2:
+            return self.macro_board[board]
+        else:
+            winner = self._subboard_winner(board)
+            self.macro_board[board] = winner
+            return winner
+        
+    def _subboard_winner(self, board: int) -> int | None:
+        """
+        (internal use) Determines if a sub-board has been won, drawn, or is still ongoing.
+        """
         subboard = self.get_subboard(board, safe=True)
-        open_spaces = np.count_nonzero(subboard)
-        if open_spaces > 6:
+        occupied_spaces = np.count_nonzero(subboard)
+        if occupied_spaces < 3:
             # Not enough moves on this board for a victory
             return None
         
@@ -64,18 +81,18 @@ class Board():
 
         # Check rows, columns, and diagonals for a win
         for i in range(3):
-            if np.all(board[i, :] == 1) or np.all(board[:, i] == 1):
+            if np.all(subboard[i, :] == 1) or np.all(subboard[:, i] == 1):
                 return 1
-            elif np.all(board[i, :] == -1) or np.all(board[:, i] == -1):
+            elif np.all(subboard[i, :] == -1) or np.all(subboard[:, i] == -1):
                 return -1
 
-        if np.all(np.diag(board) == 1) or np.all(np.diag(np.fliplr(board)) == 1):
+        if np.all(np.diag(subboard) == 1) or np.all(np.diag(np.fliplr(subboard)) == 1):
             return 1
-        elif np.all(np.diag(board) == -1) or np.all(np.diag(np.fliplr(board)) == -1):
+        elif np.all(np.diag(subboard) == -1) or np.all(np.diag(np.fliplr(subboard)) == -1):
             return -1
 
         # Check for ongoing game or draw
-        if open_spaces > 0:
+        if occupied_spaces < 9:
             # Game ongoing
             return None
         else:
@@ -84,7 +101,7 @@ class Board():
     
     def subboard_open(self, board: int) -> bool:
         """
-        Determines if moves can be played on a specific sub-board.
+        Determines if moves can be played on a specific sub-board. Less expensive than subboard_winner.
 
         Args:
             board (int): The board to check.
@@ -92,6 +109,29 @@ class Board():
         Returns:
             type: True if moves can be played, False if not.
         """
+        
+        # Check cache
+        if self.macro_board[board] != 2:
+            return self.macro_board[board] == None
+        else:
+            # Can't update the cache from here without compromising on subboard_open being more efficient than subboard_winner
+            return self._subboard_open(board)
+
+    def _subboard_open(self, board: int) -> bool:
+        """
+        Determines if moves can be played on a specific sub-board. Less expensive than subboard_winner.
+
+        Args:
+            board (int): The board to check.
+        
+        Returns:
+            type: True if moves can be played, False if not.
+        """
+
+        # Check cache
+        if self.macro_board[board] != 2:
+            return self.macro_board[board] == None
+        
         subboard = self.get_subboard(board, safe=True)
         occupied_spaces = np.count_nonzero(subboard)
         if occupied_spaces < 3:
@@ -149,7 +189,7 @@ class Board():
         Args:
             move (int): A number in the range 0-80, defining a move to play on the board.
         """
-        assert move >= 0 and move[0] <= 8
+        assert move >= 0 and move <= 80
         return move // 9, move % 9
 
     def is_move_legal(self, move: tuple[int]) -> bool:
@@ -208,6 +248,8 @@ class Board():
             if not self.subboard_open(move[1]):
                 self.current_board = -1
             self.move_count += 1
+
+            self.macro_board[move[0]] = 2 # Mark for re-calculation
 
             return self
         
