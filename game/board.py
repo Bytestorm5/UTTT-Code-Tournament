@@ -29,6 +29,7 @@ class Board():
             self.macro_board[i] = self.subboard_winner(i)
 
         self.current_board = -1 if current_board == None else current_board       
+        self.prev_move = (-1, -1)
 
     def get_subboard(self, board: int, safe: bool = True) -> np.ndarray:
         """
@@ -292,6 +293,7 @@ class Board():
 
             self.board[idx] = 1 - (2 * self.turn())
             self.current_board = move[1]
+            self.prev_move = move
 
             self.macro_board[move[0]] = 2 # Mark for re-calculation
             if not self.subboard_open(move[1]):
