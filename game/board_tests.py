@@ -41,7 +41,18 @@ class TestBoard(unittest.TestCase):
             negative_winner = None if subboard[1] == None else subboard[1] * -1
 
             self.assertTrue(positive_board.subboard_winner(0) == subboard[1], subboard[2] + " | Positive\n" + str(positive_board))
-            self.assertTrue(negative_board.subboard_winner(0) == negative_winner, subboard[2] + " | Negative\n" + str(positive_board))
+            self.assertTrue(negative_board.subboard_winner(0) == negative_winner, subboard[2] + " | Negative\n" + str(negative_board))
+
+    def test_subboard_redirection(self):
+        board = Board(np.array([1, 1, 1, 0, 0, 0, 0, 0, 0] + [0] * 72), 1)
+        board.make_move((1, 0))
+        self.assertTrue(board.current_board == -1)
+        self.assertTrue(len(list(board.get_legal_moves())) == 71)
+
+        board = Board(np.array([1, 1, -1, 0, 0, 0, 0, 0, 0] + [0] * 72), 1)
+        board.make_move((1, 0))
+        self.assertTrue(board.current_board == 0)
+        self.assertTrue(len(list(board.get_legal_moves())) == 6)
 
     def test_subboard_open(self):
         self.assertTrue(self.default_board.subboard_open(0))
@@ -58,6 +69,9 @@ class TestBoard(unittest.TestCase):
         
     def test_idx_to_move(self):
         self.assertEqual(self.default_board.idx_to_move(11), (1, 2))
+        self.assertEqual(self.default_board.idx_to_move(80), (8, 8))
+        self.assertEqual(self.default_board.idx_to_move(0), (0, 0))
+        self.assertEqual(self.default_board.idx_to_move(1), (0, 1))
         
     def test_is_move_legal(self):
         # assuming the game just started

@@ -1,6 +1,5 @@
-from engine_base import BaseEngine
+from engines.engine_base import BaseEngine
 from game.board import Board
-from ..game.board import Board
 
 import random
 
@@ -11,12 +10,12 @@ class SampleEngine(BaseEngine):
         
         self.total_boards_evaluated = board_start
     
-    def best_move(self, board: Board) -> tuple[tuple[int], dict]:
+    def best_move(self, board: Board, time_limit: float) -> tuple[tuple[int], dict]:
         """
         Finds the best move from the given board and returns it, along with an optional metadata dict
         """
         board_count = 0
-        moves = board.get_legal_moves()
+        moves = list(board.get_legal_moves())
         selected_move = 0
         while random.randint(0, 10) != 1:
             selected_move = random.randint(0, len(moves)-1)

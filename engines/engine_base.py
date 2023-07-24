@@ -1,4 +1,4 @@
-from ..game.board import Board
+from game.board import Board
 
 class BaseEngine():
     def __init__(self) -> None:
@@ -10,7 +10,7 @@ class BaseEngine():
         # Include any other metadata or variables you want in your init
 
     # Must be overridden with your algo
-    def best_move(self, board: Board) -> tuple[tuple[int], dict]:
+    def best_move(self, board: Board, time_limit: float) -> tuple[tuple[int], dict]:
         """
         Finds the best move from the given board and returns it, along with an optional metadata dict
         """

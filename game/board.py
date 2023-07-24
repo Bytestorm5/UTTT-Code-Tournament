@@ -156,6 +156,51 @@ class Board():
             # Draw
             return False
    
+    def winner(self) -> int:
+        """
+        Determine if the overall game has been won or not. 
+
+        Returns:
+            type: 1 if X wins, -1 if O wins, and 0 if it is a Draw. Returns None if the game is ongoing.
+        """       
+
+        # Calculate all subboard states
+        occupied_spaces = 9
+        for i in range(9):
+            winner = self.macro_board[i]
+            if winner == 2:
+                winner = self.subboard_winner(i)
+            if winner == None:
+                occupied_spaces -= 1
+            
+        if occupied_spaces < 3:
+            return None
+        subboard = np.reshape(self.macro_board, (3, 3))
+
+        # Check rows, columns, and diagonals for a win
+        for i in range(3):
+            if np.all(subboard[i, :] == 1) or np.all(subboard[:, i] == 1):
+                return 1
+            elif np.all(subboard[i, :] == -1) or np.all(subboard[:, i] == -1):
+                return -1
+
+        if np.all(np.diag(subboard) == 1) or np.all(np.diag(np.fliplr(subboard)) == 1):
+            return 1
+        elif np.all(np.diag(subboard) == -1) or np.all(np.diag(np.fliplr(subboard)) == -1):
+            return -1
+        
+        # Check for ongoing game or draw
+        if occupied_spaces < 9:
+
+            if len(list(self.get_legal_moves())) == 0:
+                raise RuntimeError("Game should be running but current player has no moves")
+
+            # Game ongoing
+            return None
+        else:
+            # Draw
+            return 0
+
     def turn(self) -> int:
         """
         Helper function to determine the current turn to play on the board.
@@ -235,6 +280,8 @@ class Board():
         Args:
             move (tuple): The move to make. Must be a tuple of two integers in the range 0-8. 
         """
+        if not isinstance(move, tuple) or len(move) < 2:
+            raise ValueError("Move must be a tuple of length 2 or more (only the first two will be read)")
         if copy:
             new_board = self.copy()
             new_board.make_move(move)
@@ -245,11 +292,12 @@ class Board():
 
             self.board[idx] = 1 - (2 * self.turn())
             self.current_board = move[1]
-            if not self.subboard_open(move[1]):
-                self.current_board = -1
-            self.move_count += 1
 
             self.macro_board[move[0]] = 2 # Mark for re-calculation
+            if not self.subboard_open(move[1]):
+                self.current_board = -1
+
+            self.move_count += 1           
 
             return self
         
