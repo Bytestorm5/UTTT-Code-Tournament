@@ -82,6 +82,11 @@ class Board():
         """
         Determines if moves can be played on a specific sub-board.
 
+        Args:
+            board (int): The board to check.
+        
+        Returns:
+            type: True if moves can be played, False if not.
         """
         subboard = self.get_subboard(board, safe=True)
         occupied_spaces = np.count_nonzero(subboard)
@@ -107,16 +112,39 @@ class Board():
             # Draw
             return False
    
-    def turn(self):
+    def turn(self) -> int:
+        """
+        Helper function to determine the current turn to play on the board.
+
+        Returns:
+            0 for X, 1 for O
+        """
         return self.move_count % 2
 
-    def copy(self):
+    def copy(self) -> Board:
+        """
+        Makes a copy of the board that does not affect the current board.
+        """
         return Board(np.copy(self.board))
     
     def move_to_idx(self, move: tuple[int]):
+        """
+        Converts a move tuple into an index on the board array. Primarily for internal use.
+
+        Args:
+            move (tuple): A tuple of two numbers in the range 0-8, defining a move to play on the board.
+        """
+        assert move[0] > 0 and move[0] < 8
+        assert move[1] > 0 and move[1] < 8
         return (9 * move[0]) + move[1]
 
-    def is_move_legal(self, move: tuple[int]):
+    def is_move_legal(self, move: tuple[int]) -> bool:
+        """
+        Determines if a move is legal or not.
+
+        Args:
+            move (tuple): The move to evaluate the legality of.
+        """
         idx = self.move_to_idx(move)
 
         # Is this square occupied already?
@@ -133,6 +161,12 @@ class Board():
         
 
     def make_move(self, move: tuple[int], copy=False):
+        """
+        Apply a move to the board. Cannot be undone.
+
+        Args:
+            move (tuple): The move to make. Must be a tuple of two integers in the range 0-8. 
+        """
         if copy:
             new_board = self.copy()
             new_board.make_move(move)
@@ -148,6 +182,9 @@ class Board():
             return self
         
     def __str__(self) -> str:
+        """
+        String representation of the board. Prints it in a large grid.
+        """
         out_str = ""
         symbol_map = {
             1: 'X',
@@ -177,6 +214,9 @@ class Board():
         return out_str
 
     def __repr__(self) -> str:
+        """
+        Barebones representation of the board. Good for caching or otherwise storing the board.
+        """
         out_str = ""
         for n in self.board:
             out_str += str(int(n)) + " "
