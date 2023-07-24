@@ -1,5 +1,9 @@
 import numpy as np
 
+# Quick note, I use np.array() to copy arrays instead of np.copy() because of this issue:
+# https://stackoverflow.com/questions/50825208/speed-of-copying-numpy-array
+# Basically it's marginally faster for small arrays
+
 class Board():
     def __init__(self, board: np.ndarray = None, current_board: int | None = None) -> None:
         """
@@ -13,7 +17,7 @@ class Board():
             >>> Board()
             Output: The starting position of a UTTT game.
         """
-        if board == None:
+        if board is None:
             self.board = np.zeros(81, np.short)   
             self.move_count = 0         
         else:
@@ -36,7 +40,7 @@ class Board():
         idx = 9 * board
         subboard = self.board[idx:idx+9]
         if safe:
-            return np.copy(subboard)
+            return np.array(subboard)
         else:
             return subboard
 
@@ -121,11 +125,11 @@ class Board():
         """
         return self.move_count % 2
 
-    def copy(self) -> Board:
+    def copy(self):
         """
         Makes a copy of the board that does not affect the current board.
         """
-        return Board(np.copy(self.board))
+        return Board(np.array(self.board))
     
     def move_to_idx(self, move: tuple[int]):
         """
@@ -134,9 +138,19 @@ class Board():
         Args:
             move (tuple): A tuple of two numbers in the range 0-8, defining a move to play on the board.
         """
-        assert move[0] > 0 and move[0] < 8
-        assert move[1] > 0 and move[1] < 8
+        assert move[0] >= 0 and move[0] <= 8
+        assert move[1] >= 0 and move[1] <= 8
         return (9 * move[0]) + move[1]
+    
+    def idx_to_move(self, move: int) -> tuple[int]:
+        """
+        Converts a board index into a move tuple. Primarily for internal use.
+
+        Args:
+            move (int): A number in the range 0-80, defining a move to play on the board.
+        """
+        assert move >= 0 and move[0] <= 8
+        return move // 9, move % 9
 
     def is_move_legal(self, move: tuple[int]) -> bool:
         """
@@ -157,8 +171,22 @@ class Board():
         elif self.current_board == -1 and not self.subboard_open(move[0]):
             return False
         
-        return True
-        
+        return True   
+    
+    def get_legal_moves(self):
+        def yield_legal_subboard_moves(board: int):
+            sboard = self.get_subboard(board)
+            for i in range(9):
+                if sboard[i] == 0:
+                    yield (board, i)
+
+        if self.current_board == -1:
+            for board_idx in range(9):
+                if self.subboard_open(board_idx):
+                    yield from yield_legal_subboard_moves(board_idx)
+        else:
+            yield from yield_legal_subboard_moves(self.current_board)
+
 
     def make_move(self, move: tuple[int], copy=False):
         """
@@ -177,6 +205,8 @@ class Board():
 
             self.board[idx] = 1 - (2 * self.turn())
             self.current_board = move[1]
+            if not self.subboard_open(move[1]):
+                self.current_board = -1
             self.move_count += 1
 
             return self
