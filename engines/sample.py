@@ -8,6 +8,8 @@ class SampleEngine(BaseEngine):
         self.name = "Sample Engine"
         self.player = "Kamil*"
         
+        # Misc. Data for your engine to preserve between moves
+        # Can be whatever you want
         self.total_boards_evaluated = board_start
     
     def best_move(self, board: Board, time_limit: float) -> tuple[tuple[int], dict]:
