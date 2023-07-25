@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from game.board import Board, board_from_repr
+from .game.board import Board, board_from_repr
 
 app = Flask(__name__)
 game_board = Board()

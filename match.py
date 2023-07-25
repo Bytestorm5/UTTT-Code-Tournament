@@ -7,6 +7,7 @@ from engines.secret import SecretEngine as Player2
 import time
 import requests
 import sys
+import traceback
 
 # Some limits on how long an engine can think for.
 # Most engines should stop by the soft limit, going beyond the hard limit forfeits the game
@@ -45,10 +46,14 @@ def run_game(p1: BaseEngine, p2: BaseEngine, game_num: int = -1, update_site: bo
         print(f"[Game {game_num}]: {current_player.name} ({symbol}) is thinking...")
         
         board_copy = board.copy() # Done before timer starts to reduce overhead
-        start = time.time()
-        move = current_player.best_move(board_copy, soft_limit())
-        time_taken = time.time() - start
-
+        try:
+            start = time.time()
+            move = current_player.best_move(board_copy, soft_limit())
+            time_taken = time.time() - start
+        except Exception:
+            print(f"[Game {game_num}]: {current_player.name} ({symbol}) has crashed with the following error:")
+            traceback.print_exc()
+            return -1 if board.turn() == 1 else 1
         print(f"[Game {game_num}]: {current_player.name} ({symbol}) has decided on the move {move} in {time_taken}s")
 
         if time_taken > hard_limit():

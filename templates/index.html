@@ -31,7 +31,6 @@
   <script>
 
     function updateGameState() {
-        // Replace 'http://localhost:5000/your_endpoint' with the actual endpoint URL
         const endpointURL = 'http://localhost:5000/board';
 
         fetch(endpointURL)
@@ -46,8 +45,7 @@
             });
     }
 
-    // Update the game state every 5 seconds (adjust the interval as needed)
-    setInterval(updateGameState, 500);
+    setInterval(updateGameState, 1500);
   </script>
 </head>
 <body>

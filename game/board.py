@@ -194,8 +194,8 @@ class Board():
         # Check for ongoing game or draw
         if occupied_spaces < 9:
 
-            if len(list(self.get_legal_moves())) == 0:
-                raise RuntimeError("Game should be running but current player has no moves")
+            # if len(list(self.get_legal_moves(ignore_end=True))) == 0:
+            #     raise RuntimeError("Game should be running but current player has no moves")
 
             # Game ongoing
             return None
@@ -260,19 +260,22 @@ class Board():
         
         return True   
     
-    def get_legal_moves(self):
-        def yield_legal_subboard_moves(board: int):
-            sboard = self.get_subboard(board)
-            for i in range(9):
-                if sboard[i] == 0:
-                    yield (board, i)
+    def get_legal_moves(self, ignore_end = False):
+        if self.winner() == None or ignore_end:
+            def yield_legal_subboard_moves(board: int):
+                sboard = self.get_subboard(board)
+                for i in range(9):
+                    if sboard[i] == 0:
+                        yield (board, i)
 
-        if self.current_board == -1:
-            for board_idx in range(9):
-                if self.subboard_open(board_idx):
-                    yield from yield_legal_subboard_moves(board_idx)
+            if self.current_board == -1:
+                for board_idx in range(9):
+                    if self.subboard_open(board_idx):
+                        yield from yield_legal_subboard_moves(board_idx)
+            else:
+                yield from yield_legal_subboard_moves(self.current_board)
         else:
-            yield from yield_legal_subboard_moves(self.current_board)
+            return
 
 
     def make_move(self, move: tuple[int], copy=False):
@@ -290,7 +293,9 @@ class Board():
             return new_board
         else:
             idx = self.move_to_idx(move)
-            assert self.board[idx] == 0
+            
+            if move not in list(self.get_legal_moves()):
+                raise ValueError(f"Attempted to play Illegal Move {move}")
 
             self.board[idx] = 1 - (2 * self.turn())
             self.current_board = move[1]
