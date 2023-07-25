@@ -11,7 +11,7 @@ import traceback
 
 # Some limits on how long an engine can think for.
 # Most engines should stop by the soft limit, going beyond the hard limit forfeits the game
-TIME_SOFT_LIMIT = 90
+TIME_SOFT_LIMIT = 15
 TIME_HARD_LIMIT = 100
 
 def send_board(input_string):
@@ -68,8 +68,8 @@ def run_game(p1: BaseEngine, p2: BaseEngine, game_num: int = -1, update_site: bo
             bonus_time = 0
         
         print(board)
-
-        send_board(repr(board))
+        if update_site:
+            send_board(repr(board))
     
     winner = p1 if board.turn() == 1 else p2 # Inverted since the turn will rollover regardless of victory
     victory_status = board.winner()
