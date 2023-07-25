@@ -5,6 +5,7 @@ import numpy as np
 # Basically it's marginally faster for small arrays
 
 class Board():
+    __slots__ = ("board", "move_count", "macro_board", "current_board", "prev_move")
     def __init__(self, board: np.ndarray = None, current_board: int | None = None) -> None:
         """
         Set up an Ultimate Tic-Tac-Toe Board.
