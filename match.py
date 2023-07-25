@@ -50,6 +50,8 @@ def run_game(p1: BaseEngine, p2: BaseEngine, game_num: int = -1, update_site: bo
             start = time.time()
             move = current_player.best_move(board_copy, soft_limit())
             time_taken = time.time() - start
+
+            board.make_move(move[0]) # In case the player plays an illegal move
         except Exception:
             print(f"[Game {game_num}]: {current_player.name} ({symbol}) has crashed with the following error:")
             traceback.print_exc()
@@ -64,8 +66,7 @@ def run_game(p1: BaseEngine, p2: BaseEngine, game_num: int = -1, update_site: bo
             print(f"[Game {game_num}]: {current_player.name} ({symbol}) exceeded the soft time limit ({time_taken} > {soft_limit()}); {bonus_time}s awarded to opponent.")
         else:
             bonus_time = 0
-
-        board.make_move(move[0])
+        
         print(board)
 
         send_board(repr(board))
