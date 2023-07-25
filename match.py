@@ -5,6 +5,7 @@ from engines.sample import SampleEngine as Player1
 
 import time
 import requests
+import sys
 
 # Some limits on how long an engine can think for.
 # Most engines should stop by the soft limit, going beyond the hard limit forfeits the game
@@ -24,7 +25,7 @@ def send_board(input_string):
     except requests.exceptions.RequestException as e:
         return f"Error: {e}"
 
-def run_game(p1: BaseEngine, p2: BaseEngine, game_num: int = -1) -> int:
+def run_game(p1: BaseEngine, p2: BaseEngine, game_num: int = -1, update_site: bool = True) -> int:
     board = Board()
 
     bonus_time = 0
@@ -75,11 +76,20 @@ def run_game(p1: BaseEngine, p2: BaseEngine, game_num: int = -1) -> int:
 
 # Creates a new 
 def getPlayer1(game_num) -> BaseEngine:
-    return Player1(0) # Any input args provided by player    
+    engine = Player1(0) # Any input args provided by player    
+    engine.name += " (X)" # temp- just to differentiate
+    return engine
 def getPlayer2(game_num) -> BaseEngine:
-    return Player1(1) # Any input args provided by player
+    engine = Player1(1) # Any input args provided by player    
+    engine.name += " (O)" # temp- just to differentiate
+    return engine
 
 if __name__ == "__main__":    
+    UPDATE_SITE = True
+    if '-q' in sys.argv or '--quiet' in sys.argv:
+        UPDATE_SITE = False
+
+
     points = {
         1: 0,
         -1: 0
@@ -103,11 +113,11 @@ if __name__ == "__main__":
 
     def run_game_pair():
         global total_games
-        game1 = run_game(getPlayer1(total_games), getPlayer2(total_games), total_games)
+        game1 = run_game(getPlayer1(total_games), getPlayer2(total_games), total_games, UPDATE_SITE)
         update_points(game1, False)
         total_games += 1
 
-        game2 = run_game(getPlayer2(total_games), getPlayer1(total_games), total_games)
+        game2 = run_game(getPlayer2(total_games), getPlayer1(total_games), total_games, UPDATE_SITE)
         total_games += 1
         update_points(game2, True)
 

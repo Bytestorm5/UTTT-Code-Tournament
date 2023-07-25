@@ -25,7 +25,5 @@ class SampleEngine(BaseEngine):
             board_count += 1
         
         self.total_boards_evaluated += board_count
-        print(moves)
-        time.sleep(1)
 
         return moves[selected_move], {'boards evaluated': board_count, 'total boards': self.total_boards_evaluated}
