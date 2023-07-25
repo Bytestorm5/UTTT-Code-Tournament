@@ -1,7 +1,9 @@
 # Ultimate Tic-Tac-Toe
 ## Setup
 Set up the virtual environment by running the following in the working directory:
+
 `python -m venv venv`
+
 `pip install -r requirements.txt`
 
 From there you can run `python match.py -q` to run a match with the sample engines in the command line.
