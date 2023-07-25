@@ -1,4 +1,4 @@
-from engines.engine_base import BaseEngine
+from .engine_base import BaseEngine
 from game.board import Board
 
 import random

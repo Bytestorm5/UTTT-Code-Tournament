@@ -2,6 +2,7 @@ from game.board import Board
 
 from engines.engine_base import BaseEngine
 from engines.sample import SampleEngine as Player1
+from engines.secret import SecretEngine as Player2
 
 import time
 import requests
@@ -77,11 +78,11 @@ def run_game(p1: BaseEngine, p2: BaseEngine, game_num: int = -1, update_site: bo
 # Creates a new 
 def getPlayer1(game_num) -> BaseEngine:
     engine = Player1(0) # Any input args provided by player    
-    engine.name += " (X)" # temp- just to differentiate
+    #engine.name += " (X)" # temp- just to differentiate
     return engine
 def getPlayer2(game_num) -> BaseEngine:
-    engine = Player1(1) # Any input args provided by player    
-    engine.name += " (O)" # temp- just to differentiate
+    engine = Player2(game_num) # Any input args provided by player    
+    #engine.name += " (O)" # temp- just to differentiate
     return engine
 
 if __name__ == "__main__":    
