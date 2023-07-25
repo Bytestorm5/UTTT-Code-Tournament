@@ -11,10 +11,10 @@ import traceback
 
 # Some limits on how long an engine can think for.
 # Most engines should stop by the soft limit, going beyond the hard limit forfeits the game
-TIME_SOFT_LIMIT = 15
+TIME_SOFT_LIMIT = 90
 TIME_HARD_LIMIT = 100
 
-def send_board(input_string):
+def send_board(input_string):    
     endpoint_url = 'http://localhost:5000/update_board'  # Replace with the actual endpoint URL
     data = {'board_repr': input_string}
 
@@ -28,6 +28,8 @@ def send_board(input_string):
         return f"Error: {e}"
 
 def run_game(p1: BaseEngine, p2: BaseEngine, game_num: int = -1, update_site: bool = True) -> int:
+    global TIME_SOFT_LIMIT, TIME_HARD_LIMIT
+
     board = Board()
 
     bonus_time = 0
@@ -70,7 +72,11 @@ def run_game(p1: BaseEngine, p2: BaseEngine, game_num: int = -1, update_site: bo
         print(board)
         if update_site:
             send_board(repr(board))
-    
+
+    if game_num >= 5:
+        TIME_SOFT_LIMIT *= 0.85
+        TIME_HARD_LIMIT = TIME_SOFT_LIMIT + 10
+
     winner = p1 if board.turn() == 1 else p2 # Inverted since the turn will rollover regardless of victory
     victory_status = board.winner()
 
@@ -156,8 +162,6 @@ if __name__ == "__main__":
         exit()
     else:
         print("--- Entering Phase 3; Time Trouble ---")
-        TIME_SOFT_LIMIT /= 4
-        TIME_HARD_LIMIT /= 4
     
     for _ in range(5): # 10 games
         run_game_pair()
