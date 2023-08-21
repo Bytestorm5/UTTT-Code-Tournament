@@ -6,7 +6,7 @@ import numpy as np
 
 class Board():
     __slots__ = ("board", "move_count", "macro_board", "current_board", "prev_move")
-    def __init__(self, board: np.ndarray = None, current_board: int | None = None, prev_move = tuple[int, int] | None) -> None:
+    def __init__(self, board: np.ndarray = None, current_board: int | None = None, prev_move: tuple[int, int] | None = None) -> None:        
         """
         Set up an Ultimate Tic-Tac-Toe Board.
 
