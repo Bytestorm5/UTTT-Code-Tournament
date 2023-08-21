@@ -6,7 +6,7 @@ import numpy as np
 
 class Board():
     __slots__ = ("board", "move_count", "macro_board", "current_board", "prev_move")
-    def __init__(self, board: np.ndarray = None, current_board: int | None = None) -> None:
+    def __init__(self, board: np.ndarray = None, current_board: int | None = None, prev_move = tuple[int, int] | None) -> None:
         """
         Set up an Ultimate Tic-Tac-Toe Board.
 
@@ -30,7 +30,7 @@ class Board():
             self.macro_board[i] = self.subboard_winner(i)
 
         self.current_board = -1 if current_board == None else current_board       
-        self.prev_move = (-1, -1)
+        self.prev_move = (-1, -1) if prev_move == None else prev_move
 
     def get_subboard(self, board: int, safe: bool = True) -> np.ndarray:
         """
@@ -216,7 +216,7 @@ class Board():
         """
         Makes a copy of the board that does not affect the current board.
         """
-        return Board(np.array(self.board), self.current_board)
+        return Board(np.array(self.board), self.current_board, self.prev_move)
     
     def move_to_idx(self, move: tuple[int]):
         """
@@ -261,7 +261,7 @@ class Board():
         return True   
     
     def get_legal_moves(self, ignore_end = False):
-        if self.winner() == None or ignore_end:
+        if ignore_end or self.winner() == None:
             def yield_legal_subboard_moves(board: int):
                 sboard = self.get_subboard(board)
                 for i in range(9):
@@ -286,7 +286,7 @@ class Board():
             move (tuple): The move to make. Must be a tuple of two integers in the range 0-8. 
         """
         if not isinstance(move, tuple) or len(move) < 2:
-            raise ValueError("Move must be a tuple of length 2 or more (only the first two will be read)")
+            raise ValueError(f"Move must be a tuple of length 2 or more (only the first two will be read). Got {move}")
         if copy:
             new_board = self.copy()
             new_board.make_move(move)
