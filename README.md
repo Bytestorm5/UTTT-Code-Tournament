@@ -1,4 +1,5 @@
 # Ultimate Tic-Tac-Toe
+> This repository was made to host the code for a competition among my college group, in which we made competing algorithms to optimally play [Ultimate Tic-Tac-Toe](https://en.wikipedia.org/wiki/Ultimate_tic-tac-toe). As such I tried my best to make this code pretty & clean, and generally avoided doing certain things because "eh, nobody's gonna look at this anyway."
 ## Setup
 Set up the virtual environment by running the following in the working directory:
 
